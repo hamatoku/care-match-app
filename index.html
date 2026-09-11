@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0f766e">
+  <title>ケアマッチアプリ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand-mark">ケ</div>
+    <div>
+      <h1>ケアマッチアプリ</h1>
+      <p>介護用品を、もっと選びやすく。</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <span class="eyebrow">CARE MATCH</span>
+        <h2>こんな用品、<br>ありませんか？</h2>
+        <p>身体状況や生活環境に合わせて、おすすめの介護用品を探せます。</p>
+      </div>
+      <div class="hero-icon">♿</div>
+    </section>
+
+    <section class="search-area">
+      <label for="search">商品を検索</label>
+      <div class="search-box">
+        <span>⌕</span>
+        <input id="search" type="search" placeholder="手すり、ベッド、車いす…">
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <h2>おすすめ商品</h2>
+        <span id="count"></span>
+      </div>
+      <div class="categories" id="categories">
+        <button class="category active" data-category="すべて">すべて</button>
+        <button class="category" data-category="手すり">手すり</button>
+        <button class="category" data-category="ベッド">ベッド</button>
+        <button class="category" data-category="車いす">車いす</button>
+        <button class="category" data-category="マットレス">マットレス</button>
+      </div>
+      <div class="product-grid" id="productGrid"></div>
+    </section>
+  </main>
+
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <article class="modal-card">
+      <button class="close" id="closeModal" aria-label="閉じる">×</button>
+      <div class="modal-icon" id="modalIcon"></div>
+      <span class="pill" id="modalCategory"></span>
+      <h2 id="modalName"></h2>
+      <p id="modalDescription"></p>
+      <div class="recommend-box">
+        <strong>こんな方におすすめ</strong>
+        <p id="modalRecommend"></p>
+      </div>
+      <button class="contact-button" id="contactButton">この商品について相談する</button>
+    </article>
+  </div>
+
+  <footer>© ケアマッチアプリ</footer>
+  <script src="app.js"></script>
+</body>
+</html>
