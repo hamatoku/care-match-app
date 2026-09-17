@@ -59,6 +59,18 @@
     box-shadow:0 6px 18px rgba(120,90,60,.12);
   }
   .brandrow{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+  .sharebtn{
+    appearance:none; border:none; background:rgba(255,255,255,.35); color:#3a2b1f;
+    width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; flex:none;
+  }
+  .sharebtn svg{width:17px; height:17px;}
+  .sharetoast{
+    position:fixed; left:50%; bottom:28px; transform:translateX(-50%);
+    background:#3a2b1f; color:#fff; padding:10px 18px; border-radius:999px; font-size:13.5px;
+    opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:200;
+  }
+  .sharetoast.show{opacity:1;}
   .brand{
     font-size:13px; letter-spacing:.02em; color:#fff; background:rgba(255,255,255,.28);
     padding:4px 12px; border-radius:999px; font-weight:700;
@@ -188,6 +200,7 @@
   <main id="main"></main>
 </div>
 
+<div class="sharetoast" id="shareToast">リンクをコピーしました</div>
 <div class="modal" id="modal">
   <button class="closebtn" id="modalClose">×</button>
   <div class="modal-scroll" id="modalScroll">
@@ -274,6 +287,9 @@ function renderTopbar(){
     topbar.innerHTML = `
       <div class="brandrow">
         <span class="brand">はまとく 福祉用具レンタル・販売</span>
+        <button class="sharebtn" id="shareBtn" title="このアプリを共有">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>
+        </button>
       </div>
       <h1 class="pagetitle">🎈 福祉用具 定番シート</h1>
       <div class="searchwrap">
@@ -281,6 +297,7 @@ function renderTopbar(){
         <input id="searchInput" type="search" inputmode="search" placeholder="商品名で探す（例：車いす、手すり）" value="${escapeHtml(state.query)}">
       </div>
     `;
+    document.getElementById('shareBtn').addEventListener('click', shareApp);
     document.getElementById('searchInput').addEventListener('input', (e)=>{
       state.query = e.target.value;
       renderHome();
@@ -420,6 +437,31 @@ function renderCategory(cat){
       openModal(meta.items[idx].img);
     });
   });
+}
+
+async function shareApp(){
+  const shareData = {
+    title: '福祉用具 定番シート | はまとく',
+    text: 'はまとくの福祉用具ガイドアプリです。よければ使ってみてください🐰',
+    url: location.href
+  };
+  if(navigator.share){
+    try{ await navigator.share(shareData); return; }catch(e){ /* user cancelled or failed, fall through */ }
+  }
+  try{
+    await navigator.clipboard.writeText(location.href);
+    showToast('リンクをコピーしました');
+  }catch(e){
+    showToast(location.href);
+  }
+}
+
+function showToast(msg){
+  const t = document.getElementById('shareToast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(()=>{ t.classList.remove('show'); }, 2600);
 }
 
 function escapeHtml(s){
