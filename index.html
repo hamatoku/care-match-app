@@ -125,7 +125,24 @@
   .resultrow .rtxt{flex:1; min-width:0;}
   .resultrow .rname{font-size:16px; font-weight:700; line-height:1.4;}
   .resultrow .rcat{font-size:13px; margin-top:3px; opacity:.6;}
-  .noresult{text-align:center; color:#a39c8d; font-size:15px; padding:40px 10px;}
+  .mascotrow{display:flex; align-items:flex-end; gap:10px; margin-bottom:18px;}
+  .mascotrow .mascot-img{width:74px; height:74px; flex:none;}
+  .speechbubble{
+    position:relative; background:var(--card); border:2px solid #ffe1a8; border-radius:18px;
+    padding:14px 16px; margin-bottom:2px; font-size:14.5px; line-height:1.8; color:#5c574d; flex:1;
+  }
+  .speechbubble:after{
+    content:''; position:absolute; left:-9px; bottom:16px; width:0; height:0;
+    border-top:8px solid transparent; border-bottom:8px solid transparent; border-right:9px solid #ffe1a8;
+  }
+  .speechbubble:before{
+    content:''; position:absolute; left:-6px; bottom:16px; width:0; height:0; z-index:1;
+    border-top:7px solid transparent; border-bottom:7px solid transparent; border-right:8px solid var(--card);
+  }
+  .speechbubble b{color:var(--ink);}
+  .noresult-wrap{text-align:center; padding:30px 10px 10px;}
+  .noresult-wrap .mascot-img{width:88px; height:88px;}
+  .noresult{color:#8a8378; font-size:15px; margin-top:10px;}
 
   /* ---- Category page ---- */
   .catbanner{
@@ -184,6 +201,41 @@
 
 <script>
 const DATA = JSON.parse(document.getElementById('app-data').textContent);
+
+const MASCOT_SVG = `<svg class="mascot-img" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+<ellipse cx="100" cy="184" rx="44" ry="8" fill="#000" opacity="0.08"/>
+<path d="M76 60 C64 30, 68 8, 82 4 C90 24, 88 46, 84 66 Z" fill="#fff5ea"/>
+<path d="M78 56 C70 32, 73 14, 82 10 C87 26, 86 44, 83 60 Z" fill="#ffc9d6"/>
+<path d="M118 62 C124 30, 118 6, 104 2 C100 22, 104 46, 110 66 Z" fill="#fff5ea"/>
+<path d="M116 58 C120 32, 116 12, 106 8 C103 24, 106 44, 111 62 Z" fill="#ffc9d6"/>
+<ellipse cx="82" cy="176" rx="15" ry="10" fill="#fff5ea"/>
+<ellipse cx="118" cy="176" rx="15" ry="10" fill="#fff5ea"/>
+<ellipse cx="100" cy="140" rx="42" ry="38" fill="#fffaf3"/>
+<path d="M64 138 C50 134, 42 122, 44 108" stroke="#fffaf3" stroke-width="15" stroke-linecap="round" fill="none"/>
+<circle cx="45" cy="105" r="10" fill="#fffaf3"/>
+<path d="M136 132 C150 122, 154 104, 146 90" stroke="#fffaf3" stroke-width="15" stroke-linecap="round" fill="none"/>
+<circle cx="145" cy="87" r="10" fill="#fffaf3"/>
+<path d="M66 118 C80 130, 120 130, 134 118 L128 132 C112 140, 88 140, 72 132 Z" fill="#ff9bb3"/>
+<path d="M100 130 L94 144 L106 140 Z" fill="#ef6d90"/>
+<circle cx="100" cy="98" r="34" fill="#fffaf3"/>
+<ellipse cx="82" cy="104" rx="7" ry="5" fill="#ffc9d6" opacity="0.8"/>
+<ellipse cx="118" cy="104" rx="7" ry="5" fill="#ffc9d6" opacity="0.8"/>
+<circle cx="89" cy="96" r="4" fill="#3a2b1f"/>
+<circle cx="111" cy="96" r="4" fill="#3a2b1f"/>
+<ellipse cx="87.5" cy="94.5" rx="1.4" ry="1.4" fill="#fff"/>
+<ellipse cx="109.5" cy="94.5" rx="1.4" ry="1.4" fill="#fff"/>
+<path d="M97 104 L103 104 L100 108 Z" fill="#ef6d90"/>
+<path d="M100 108 C100 112, 96 114, 91 112" stroke="#3a2b1f" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+<path d="M100 108 C100 112, 104 114, 109 112" stroke="#3a2b1f" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+<line x1="66" y1="100" x2="80" y2="102" stroke="#e3c9a8" stroke-width="1.6"/>
+<line x1="66" y1="108" x2="80" y2="107" stroke="#e3c9a8" stroke-width="1.6"/>
+<line x1="134" y1="100" x2="120" y2="102" stroke="#e3c9a8" stroke-width="1.6"/>
+<line x1="134" y1="108" x2="120" y2="107" stroke="#e3c9a8" stroke-width="1.6"/>
+<rect x="80" y="146" width="40" height="16" rx="4" fill="#ffffff"/>
+<text x="100" y="157.5" font-family="'Hiragino Sans','Yu Gothic',sans-serif" font-size="9" font-weight="700" fill="#ef6d90" text-anchor="middle">はまとく</text>
+<g fill="#ffd166"><path d="M158 60 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3 z"/></g>
+</svg>`;
+
 const PURCHASE_B64 = document.getElementById('purchase-data').textContent.trim();
 
 const CAT_ORDER = ['wheelchair','handrail','walker','pressuresore','bed','purchase'];
@@ -260,8 +312,12 @@ function renderHome(){
     renderSearchResults(q);
     return;
   }
-  let html = `<div class="introcard">
-    訪問時にサッと使える、<b>はまとく</b>独自の福祉用具ガイドです。カテゴリーを選んで、代表的な商品の価格イメージをその場で確認できます。詳しい商品選定は、はまとくの福祉用具専門相談員にご相談ください。
+  let html = `<div class="mascotrow">
+    ${MASCOT_SVG}
+    <div class="speechbubble">
+      こんにちは！<b>はまとく</b>の福祉用具ガイドです😊<br>
+      カテゴリーを選んで、代表的な商品の価格イメージをその場で確認できます。詳しい商品選定は、はまとくの福祉用具専門相談員にご相談くださいね。
+    </div>
   </div>`;
   html += `<div class="catgrid">`;
   for(const cat of CAT_ORDER){
@@ -311,7 +367,7 @@ function renderSearchResults(q){
   }
   let html = '';
   if(results.length === 0){
-    html = `<div class="noresult">「${escapeHtml(q)}」に一致する商品が見つかりません</div>`;
+    html = `<div class="noresult-wrap">${MASCOT_SVG}<div class="noresult">「${escapeHtml(q)}」に一致する商品が見つかりませんでした。別のキーワードで試してみてください。</div></div>`;
   } else {
     html = `<div class="resultlist">`;
     for(const r of results){
