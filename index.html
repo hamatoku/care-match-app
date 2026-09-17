@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" id="viewportMeta" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" id="viewportMeta" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
 <title>福祉用具 定番シート | はまとく</title>
 <style>
   :root{
@@ -43,12 +43,22 @@
     border-bottom:1px solid var(--line);
     padding:16px 18px 14px;
   }
-  .brandrow{display:flex; align-items:baseline; justify-content:space-between; gap:8px;}
-  .brand{font-size:14px; letter-spacing:.02em; color:#8a8378;}
-  .brand b{color:var(--ink); font-weight:700;}
-  h1.pagetitle{
-    font-size:25px; margin:4px 0 0; font-weight:800; letter-spacing:.01em;
+  header.topbar.home{
+    background:linear-gradient(120deg,#ffd166 0%,#ff9bb3 45%,#8ecdf0 100%);
+    border-bottom:none;
+    padding:20px 18px 26px;
+    border-radius:0 0 28px 28px;
+    box-shadow:0 6px 18px rgba(120,90,60,.12);
   }
+  .brandrow{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+  .brand{
+    font-size:13px; letter-spacing:.02em; color:#fff; background:rgba(255,255,255,.28);
+    padding:4px 12px; border-radius:999px; font-weight:700;
+  }
+  h1.pagetitle{
+    font-size:26px; margin:12px 0 0; font-weight:900; letter-spacing:.01em;
+  }
+  header.topbar.home h1.pagetitle{color:#3a2b1f; text-shadow:0 2px 0 rgba(255,255,255,.35);}
   .backrow{display:flex; align-items:center; gap:10px; margin-bottom:2px;}
   .backbtn{
     appearance:none; border:none; background:none; padding:8px 6px 8px 0;
@@ -57,13 +67,14 @@
   }
   .backbtn svg{width:20px; height:20px;}
 
-  .searchwrap{margin-top:12px; position:relative;}
+  .searchwrap{margin-top:14px; position:relative;}
   .searchwrap input{
-    width:100%; padding:13px 16px 13px 42px; border-radius:14px; border:1px solid var(--line);
+    width:100%; padding:14px 18px 14px 44px; border-radius:999px; border:none;
     background:#fff; font-size:16.5px; color:var(--ink); outline:none;
+    box-shadow:0 6px 16px rgba(90,60,40,.14);
   }
-  .searchwrap input:focus{border-color:#c9c0b2;}
-  .searchwrap svg{position:absolute; left:14px; top:50%; transform:translateY(-50%); width:18px; height:18px; opacity:.45;}
+  .searchwrap input:focus{box-shadow:0 6px 16px rgba(90,60,40,.22);}
+  .searchwrap svg{position:absolute; left:16px; top:50%; transform:translateY(-50%); width:18px; height:18px; opacity:.5;}
 
   /* ---- Main scroll area ---- */
   main{flex:1; padding:18px 18px 44px;}
@@ -71,20 +82,27 @@
   /* ---- Home: category grid ---- */
   .catgrid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:6px;}
   .cattile{
-    border-radius:20px; padding:20px 18px; min-height:132px;
+    border-radius:22px; padding:20px 18px; min-height:136px;
     display:flex; flex-direction:column; justify-content:space-between;
     border:none; text-align:left; cursor:pointer;
-    color:#3a3630;
-    box-shadow:0 3px 10px rgba(120,100,70,.08);
+    color:#fff;
   }
-  .cattile .catname{font-size:18.5px; font-weight:800; line-height:1.35;}
-  .cattile .catcount{font-size:13.5px; opacity:.7; margin-top:4px;}
-  .cattile .catmark{font-size:30px; align-self:flex-end;}
+  .cattile:nth-child(6n+1){transform:rotate(-2deg);}
+  .cattile:nth-child(6n+2){transform:rotate(2deg);}
+  .cattile:nth-child(6n+3){transform:rotate(1.5deg);}
+  .cattile:nth-child(6n+4){transform:rotate(-1.5deg);}
+  .cattile:nth-child(6n+5){transform:rotate(-2deg);}
+  .cattile:nth-child(6n+6){transform:rotate(2deg);}
+  .cattile .catname{font-size:18.5px; font-weight:900; line-height:1.35; text-shadow:0 1px 0 rgba(0,0,0,.08);}
+  .cattile .catcount{font-size:13.5px; opacity:.9; margin-top:4px; font-weight:600;}
+  .cattile .catmark{
+    font-size:26px; align-self:flex-end; background:rgba(255,255,255,.32);
+    width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  }
 
   .introcard{
-    background:var(--card); border:1px solid var(--line); border-radius:18px;
+    background:var(--card); border:2px dashed #f0c98a; border-radius:18px;
     padding:16px 18px; margin-bottom:18px; font-size:15px; line-height:1.85; color:#5c574d;
-    box-shadow:0 2px 8px rgba(120,100,70,.05);
   }
   .introcard b{color:var(--ink);}
 
@@ -191,12 +209,13 @@ function render(){
 }
 
 function renderTopbar(){
+  topbar.classList.toggle('home', state.view === 'home');
   if(state.view === 'home'){
     topbar.innerHTML = `
       <div class="brandrow">
-        <span class="brand"><b>はまとく</b> 福祉用具レンタル・販売</span>
+        <span class="brand">はまとく 福祉用具レンタル・販売</span>
       </div>
-      <h1 class="pagetitle">福祉用具 定番シート</h1>
+      <h1 class="pagetitle">🎈 福祉用具 定番シート</h1>
       <div class="searchwrap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input id="searchInput" type="search" inputmode="search" placeholder="商品名で探す（例：車いす、手すり）" value="${escapeHtml(state.query)}">
@@ -241,7 +260,7 @@ function renderHome(){
     const meta = DATA[cat];
     const count = cat === 'purchase' ? '' : `<div class="catcount">${meta.items.length}商品</div>`;
     html += `
-      <button class="cattile" style="background:${meta.color}40" data-cat="${cat}">
+      <button class="cattile" style="background:${meta.color}" data-cat="${cat}">
         <div class="catmark">${CAT_ICON[cat]}</div>
         <div>
           <div class="catname">${meta.label}</div>
@@ -300,7 +319,7 @@ function renderSearchResults(q){
 
 function renderCategory(cat){
   const meta = DATA[cat];
-  let html = `<div class="catbanner" style="background:${meta.color}26;">カードをタップすると拡大表示できます</div>`;
+  let html = `<div class="catbanner" style="background:${meta.color}26;">📌 カードをタップで拡大／指でつまんでピンチズームもOK！</div>`;
   if(cat === 'purchase'){
     html += `<div class="fullimgwrap"><img src="data:image/jpeg;base64,${PURCHASE_B64}" id="purchaseImg"></div>`;
     main.innerHTML = html;
@@ -342,11 +361,9 @@ function openModal(b64){
   modalImg.src = 'data:image/jpeg;base64,' + b64;
   modalImg.classList.remove('zoomed');
   modal.classList.add('open');
-  document.getElementById('viewportMeta').setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=6, user-scalable=yes');
 }
 function closeModal(){
   modal.classList.remove('open');
-  document.getElementById('viewportMeta').setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
   modalScroll.scrollTop = 0;
   modalScroll.scrollLeft = 0;
 }
