@@ -286,13 +286,25 @@ function renderHome(){
   });
 }
 
+function normalizeForSearch(s){
+  if(!s) return '';
+  // full-width/half-width normalize (numbers, letters, some symbols)
+  let out = s.normalize('NFKC');
+  // hiragana -> katakana (so ひらがな入力でもカタカナ商品名にヒットする)
+  out = out.replace(/[\u3041-\u3096]/g, ch => String.fromCharCode(ch.charCodeAt(0) + 0x60));
+  // lowercase + strip spaces
+  out = out.toLowerCase().replace(/\s+/g, '');
+  return out;
+}
+
 function renderSearchResults(q){
+  const nq = normalizeForSearch(q);
   const results = [];
   for(const cat of CAT_ORDER){
     if(cat === 'purchase') continue;
     const meta = DATA[cat];
     meta.items.forEach((item, idx)=>{
-      if(item.name.includes(q)){
+      if(normalizeForSearch(item.name).includes(nq) || normalizeForSearch(meta.label).includes(nq)){
         results.push({cat, meta, item, idx});
       }
     });
