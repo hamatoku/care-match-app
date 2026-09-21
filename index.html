@@ -32,17 +32,21 @@
     --purchase-soft:#e3f4f1;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  html,body{margin:0;padding:0;}
+  html,body{margin:0;padding:0; height:100%; overflow:hidden; overscroll-behavior:none;}
   body{
     background:var(--paper);
     color:var(--ink);
     font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
     font-size:16px;
     line-height:1.6;
-    min-height:100vh;
-    overscroll-behavior-y:none;
+    overscroll-behavior:none;
+    position:fixed;
+    inset:0;
   }
-  #app{max-width:640px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column;}
+  #app{
+    max-width:640px; margin:0 auto; height:100%; display:flex; flex-direction:column;
+    overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior-y:contain;
+  }
 
   /* ---- Top bar ---- */
   header.topbar{
@@ -318,7 +322,7 @@ function renderTopbar(){
       <h1 class="pagetitle">${meta.label}</h1>
     `;
     document.getElementById('backBtn').addEventListener('click', ()=>{
-      state.view='home'; state.cat=null; render(); window.scrollTo(0,0);
+      state.view='home'; state.cat=null; render(); pushAppState(); document.getElementById('app').scrollTop = 0;
     });
   }
 }
@@ -354,7 +358,7 @@ function renderHome(){
   main.innerHTML = html;
   main.querySelectorAll('.cattile').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      state.view='cat'; state.cat=btn.dataset.cat; render(); window.scrollTo(0,0);
+      state.view='cat'; state.cat=btn.dataset.cat; render(); pushAppState(); document.getElementById('app').scrollTop = 0;
     });
   });
 }
@@ -472,20 +476,47 @@ function escapeHtml(s){
 const modal = document.getElementById('modal');
 const modalImg = document.getElementById('modalImg');
 const modalScroll = document.getElementById('modalScroll');
-document.getElementById('modalClose').addEventListener('click', closeModal);
-modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
+document.getElementById('modalClose').addEventListener('click', ()=>{ history.back(); });
+modal.addEventListener('click', (e)=>{ if(e.target === modal) history.back(); });
 
 function openModal(b64){
   modalImg.src = 'data:image/jpeg;base64,' + b64;
   modalImg.classList.remove('zoomed');
   modal.classList.add('open');
+  pushAppState({modal:true});
 }
-function closeModal(){
+function closeModalInternal(){
   modal.classList.remove('open');
   modalScroll.scrollTop = 0;
   modalScroll.scrollLeft = 0;
 }
 let lastTap = 0;
+
+/* ---- History trap: keep swipe-back / Android back gesture inside the app
+   instead of exiting to the home screen or previous site ---- */
+function pushAppState(extra){
+  const s = Object.assign({view:state.view, cat:state.cat, modal:false}, extra||{});
+  history.pushState(s, '', location.href);
+}
+history.replaceState({view:'home', cat:null, modal:false}, '', location.href);
+
+window.addEventListener('popstate', (e)=>{
+  const s = e.state;
+  if(!s){
+    // user swiped past our very first entry — trap it and stay put
+    history.pushState({view:state.view, cat:state.cat, modal:false}, '', location.href);
+    if(modal.classList.contains('open')) closeModalInternal();
+    return;
+  }
+  if(!s.modal && modal.classList.contains('open')){
+    closeModalInternal();
+  }
+  if(s.view !== state.view || s.cat !== state.cat){
+    state.view = s.view; state.cat = s.cat;
+    render();
+  }
+  document.getElementById('app').scrollTop = 0;
+});
 
 render();
 
